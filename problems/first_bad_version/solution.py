@@ -1,23 +1,20 @@
 # The isBadVersion API is already defined for you.
-# @param version, an integer
-# @return an integer
-# def isBadVersion(version):
+# def isBadVersion(version: int) -> bool:
 
-import random
-
-class Solution:    
-    
-    def firstBadVersion(self, n):
-        """
-        :type n: int
-        :rtype: int
-        """
-        left = 1
-        right = n
-        while left < right:
-            mid = int(left + (right-left)/2)
-            if isBadVersion(mid) == False:
-                left = mid + 1
+class Solution:
+    def firstBadVersion(self, n: int) -> int:
+        l = 0
+        r = n
+        mid = 0
+        result = []
+        result.append(n)
+        while l < r :
+            mid = l + (r-l)//2
+            if mid == l or mid == r:
+                break
+            if isBadVersion(mid):
+                result.append(mid)
+                r = mid
             else:
-                right = mid
-        return left
+                l = mid
+        return min(result)
