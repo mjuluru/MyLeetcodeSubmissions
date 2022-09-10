@@ -1,89 +1,72 @@
 public class Solution {
-    Dictionary<char, IList<char>> adjList;
-    Dictionary<char, bool> visited;
-    IList<char> res;
-    
-    public string AlienOrder(string[] words) {
-        res = new List<char>();
-        adjList = new Dictionary<char, IList<char>>();
+    string res = "";
+    Dictionary<char, bool> visit = new Dictionary<char, bool>();
+    public string AlienOrder(string[] words) 
+    {
+        Dictionary<char, List<char>> map = new Dictionary<char, List<char>>();
         
-        foreach( var wd in words)
-        {
-            foreach(var ch in wd)
-            {
-                if(!adjList.ContainsKey(ch))
-                {
-                    var temp = new List<char>();
-                    adjList.Add(ch, temp);
+        foreach(var wd in words) {
+            foreach(var ch in wd) {
+                if(!map.ContainsKey(ch)) {
+                    //Console.WriteLine("aa: " + ch);
+                    map.Add(ch, new List<char>());
                 }
             }
         }
         
-        for(int i = 1; i<words.Length; i++)
-        {
-            string first = words[i-1]; 
-            string sec = words[i];
-            int minLen = Math.Min(sec.Length, first.Length);
-            if(first.Length > sec.Length && first.Substring(0, minLen).Equals(sec.Substring(0, minLen)) == true)
-            {
+        for(int i=0; (i+1)<words.Length; i++) {
+            string str1 = words[i];
+            string str2 = words[i+1];
+            
+            if(str2.Length < str1.Length && str2.Equals(str1.Substring(0, str2.Length))) {
                 return "";
             }
-            
-            Console.WriteLine("first: " + first + ", sec: " + sec);
-            for(int j=0; j<minLen; j++)
-            {
-                Console.WriteLine("first: " + first[j] + ", sec: " + sec[j]);
-                if(first[j] != sec[j])
-                {
-                    if(adjList.ContainsKey(first[j]))
-                    {
-                        adjList[first[j]].Add(sec[j]);
+
+            for(int j=0; j<str1.Length && j<str2.Length; j++) {
+                if(str1[j] != str2[j]) {
+                    if(!map.ContainsKey(str1[j])) {
+                        map.Add(str1[j], new List<char>());
                     }
-                    else
-                    {
-                        var temp = new List<char>();
-                        temp.Add(sec[j]);
-                        adjList.Add(first[j], temp);
+                    if(str2[j] == 'c') {
+                        Console.WriteLine("==== " + j  +"," + str1 + "," + str2);
                     }
+                    map[str1[j]].Add(str2[j]);
                     
                     break;
                 }
             }
         }
         
-        visited = new Dictionary<char, bool>();
+        foreach(var ch in map.Keys) {
+            Console.WriteLine("---" + ch + "," + string.Join("", map[ch]));
+        }
         
-        
-        foreach(var ch in adjList.Keys)
-        {
-            if(depth(ch))
-            {
+        foreach(var ch in map.Keys) {
+            Console.WriteLine("first char:: " + ch + ":" + string.Join("", map[ch]));
+            if(this.Recursion(map, ch, visit)) {
                 return "";
             }
         }
         
-        return new String(string.Join("", res).ToCharArray().Reverse().ToArray());
+        return new String(this.res.ToCharArray().Reverse().ToArray());
     }
     
-    public bool depth(char ch)
-    {
-        if(visited.ContainsKey(ch))
-        {
-            return visited[ch];
+    public bool Recursion(Dictionary<char, List<char>> map, char ch, Dictionary<char, bool> visit){
+        Console.WriteLine("-------- does visit contains " + ch + "," + visit.ContainsKey(ch));
+        if(visit.ContainsKey(ch)) {
+            return visit[ch];
         }
-        
-        visited.Add(ch, true);
-        foreach(var nei in adjList[ch])
-        {
-            if(depth(nei))
-            {
+
+        visit.Add(ch, true);
+        foreach(char nei in map[ch]) {
+            Console.WriteLine("--------" + nei);
+            if(this.Recursion(map, nei, visit))
                 return true;
-            }
         }
         
-        visited[ch] = false;
-        res.Add(ch);
-        
-        return false;
+        visit[ch] = false;
+        this.res += ch;
+        Console.WriteLine("printed char " + ch);
+        return visit[ch];
     }
 }
