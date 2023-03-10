@@ -3,8 +3,8 @@ class Solution:
         result = []
         for i in range(len(nums)):
             if (target-nums[i]) in nums:
-                index = nums.index(target-nums[i])
-                if index != i:
-                    return [i,index]
+                idx = nums.index(target-nums[i])
+                if idx != i:
+                    return [i, idx]
         return [0,0]
 
